@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow import keras
 from keras import layers
 from keras.datasets import mnist
@@ -29,10 +30,16 @@ model.compile(
 )
 
 # Train 
-# TODO - save data (checkpoints)
-model.fit(x_train, y_train, batch_size=32, epochs=25, verbose=2)
-model.evaluate(x_test, y_test, batch_size=32, verbose=2)
+trained = True
+cp_path = os.path.dirname(os.path.abspath(__file__)) + '\\callbacks\\cp.ckpt'
 
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=cp_path, save_weights_only=True, verbose=1)
+
+if not trained:
+    model.fit(x_train, y_train, batch_size=32, epochs=30, verbose=2, callbacks=[cp_callback])
+    model.evaluate(x_test, y_test, batch_size=32, verbose=2)
+else:
+    model.load_weights(cp_path)
 
 # Predict data
 predict = model.predict(load_images())
