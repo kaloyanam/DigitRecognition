@@ -4,11 +4,6 @@ from keras import layers
 from keras.datasets import mnist
 import numpy as np
 from load_tests import *
-import streamlit as st
-
-
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' 
 
 # Load data from dataset
 def create_model():
@@ -20,10 +15,9 @@ def create_model():
     # Create a model with Sequential API
     model = keras.Sequential()
     model.add(keras.Input(28 * 28))
+    model.add(layers.Dense(1024, 'relu'))
     model.add(layers.Dense(512, 'relu'))
-    model.add(layers.Dense(256, 'relu'))
-    model.add(layers.Dense(128,'relu'))
-    model.add(layers.Dropout(0.1))
+    model.add(layers.Dropout(0.2))
     model.add(layers.Dense(10))
 
     # Compile model
@@ -41,7 +35,8 @@ def train(_model,x_train,y_train,trained):
     cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=cp_path, save_weights_only=True, verbose=1)
 
     if not trained:
-        _model.fit(x_train, y_train, batch_size=32, epochs=25, verbose=2, callbacks=[cp_callback])
+        _model.fit(x_train, y_train, batch_size=32, epochs=50, verbose=2, callbacks=[cp_callback])
+        _model.evaluate(x_train, y_train, batch_size=32, verbose=2)
         trained = True
     else:
         _model.load_weights(cp_path)            
@@ -49,11 +44,8 @@ def train(_model,x_train,y_train,trained):
 
 
 # Predict data
-def predict_image(_image,_model,x_train,y_train):
-    #_model.evaluate(x_train, y_train, batch_size=32, verbose=2)
+def predict_image(_image, _model):
     predict = _model.predict(_image)
-    print(str(predict))
-    print(str(_image))
     for i in predict:
         print('I guess: ' + str(np.argmax(i)))
         print('Prediction: ' + str(i))
