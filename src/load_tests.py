@@ -14,4 +14,14 @@ def load_images():
         image = tf.cast(image, tf.float32)
         images = tf.concat([images, image], axis=0)
     return images
-        
+def load_image(image):
+    image = cv2.resize(image,(28,28))
+    image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    # f = open('newimage.txt','w')
+    # for i in image:
+    #     f.write(str(i)+'\n')
+    # f.close()
+    image = image / 255.0
+    image = tf.reshape(image, shape=(1, 784))
+    image = tf.cast(image, tf.float32)
+    return image
